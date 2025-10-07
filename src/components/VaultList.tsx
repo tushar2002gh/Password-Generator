@@ -20,8 +20,9 @@ export default function VaultList({ items, onAdd, onEdit, onDelete, userPassword
   const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set());
   const [decryptedItems, setDecryptedItems] = useState<Map<string, any>>(new Map());
 
+  // FIXED: Check item.id is string before using as key
   const decryptItem = (item: VaultItem) => {
-    if (decryptedItems.has(item.id)) {
+    if (typeof item.id === 'string' && decryptedItems.has(item.id)) {
       return decryptedItems.get(item.id);
     }
 
@@ -30,7 +31,9 @@ export default function VaultList({ items, onAdd, onEdit, onDelete, userPassword
       const key = generateKey(userPassword, salt);
       const decryptedData = JSON.parse(decryptData(encryptedData, key));
       
-      setDecryptedItems(prev => new Map(prev).set(item.id, decryptedData));
+      if (typeof item.id === 'string') {
+        setDecryptedItems(prev => new Map(prev).set(item.id, decryptedData));
+      }
       return decryptedData;
     } catch (error) {
       console.error('Decryption error:', error);
@@ -105,7 +108,7 @@ export default function VaultList({ items, onAdd, onEdit, onDelete, userPassword
           placeholder="Search vault items..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:b[...]"
         />
       </div>
 
